@@ -18,7 +18,8 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   statistic = "Average"
   evaluation_periods = "2"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "lb_response_errors" {
@@ -36,7 +37,8 @@ resource "aws_cloudwatch_metric_alarm" "lb_response_errors" {
   statistic = "Sum"
   evaluation_periods = "1"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "backend_response_errors" {
@@ -54,7 +56,8 @@ resource "aws_cloudwatch_metric_alarm" "backend_response_errors" {
   statistic = "Sum"
   evaluation_periods = "1"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "latency" {
@@ -91,7 +94,8 @@ resource "aws_cloudwatch_metric_alarm" "surge_queue" {
   statistic = "Maximum"
   evaluation_periods = "1"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "spillover" {
@@ -109,5 +113,6 @@ resource "aws_cloudwatch_metric_alarm" "spillover" {
   statistic = "Sum"
   evaluation_periods = "1"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
