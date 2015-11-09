@@ -81,7 +81,7 @@ resource "aws_cloudwatch_metric_alarm" "latency" {
 
 resource "aws_cloudwatch_metric_alarm" "surge_queue" {
   alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Surge Queue Length"
-  alarm_description = "ELB has too many requests waiting for an haproxy instance"
+  alarm_description = "ELB has too many requests waiting for a backend instance"
   namespace = "AWS/ELB"
   dimensions = {
     "LoadBalancerName" = "${var.lb_name}"
