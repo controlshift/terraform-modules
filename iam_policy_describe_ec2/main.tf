@@ -1,4 +1,4 @@
-# role name
+# role names as string separated by ','
 variable "roles" {}
 variable "env" {}
 variable "app" {}
