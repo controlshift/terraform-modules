@@ -22,44 +22,6 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
 }
 
-resource "aws_cloudwatch_metric_alarm" "lb_response_errors" {
-  alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} LB Response Errors"
-  alarm_description = "Monitor number of HTTP 500 errors sent as response by ELB because there are no healthy instances or they have exceeded their capacity"
-  namespace = "AWS/ELB"
-  dimensions = {
-    "LoadBalancerName" = "${var.lb_name}"
-  }
-  metric_name = "HTTPCode_ELB_5XX"
-  comparison_operator = "GreaterThanThreshold"
-  threshold = "0"
-  unit = "Count"
-  period = "60"
-  statistic = "Sum"
-  evaluation_periods = "1"
-  alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  ok_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
-}
-
-resource "aws_cloudwatch_metric_alarm" "backend_response_errors" {
-  alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Backend Response Errors"
-  alarm_description = "Monitor number of HTTP 500 errors sent as response by backend servers (HA Proxies)"
-  namespace = "AWS/ELB"
-  dimensions = {
-    "LoadBalancerName" = "${var.lb_name}"
-  }
-  metric_name = "HTTPCode_Backend_5XX"
-  comparison_operator = "GreaterThanThreshold"
-  threshold = "1"
-  unit = "Count"
-  period = "60"
-  statistic = "Sum"
-  evaluation_periods = "1"
-  alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  ok_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = []
-}
-
 resource "aws_cloudwatch_metric_alarm" "latency" {
   alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Latency"
   alarm_description = "High latency from backend servers"
