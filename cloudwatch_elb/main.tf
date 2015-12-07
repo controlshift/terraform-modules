@@ -25,7 +25,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
 resource "aws_cloudwatch_metric_alarm" "latency" {
   alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Latency"
   alarm_description = "High latency from backend servers"
-  namespace = "AWS?ELB"
+  namespace = "AWS/ELB"
   dimensions = {
     "LoadBalancerName" = "${var.lb_name}"
   }
