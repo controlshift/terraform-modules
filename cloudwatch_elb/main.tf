@@ -38,7 +38,7 @@ resource "aws_cloudwatch_metric_alarm" "latency" {
   evaluation_periods = "3"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
   ok_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = []
 }
 
 resource "aws_cloudwatch_metric_alarm" "surge_queue" {
