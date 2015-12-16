@@ -3,9 +3,9 @@ variable "lb_name" {}
 variable "server_min_instances" {}
 variable "sns_monitoring_topic_arn" {}
 
-resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
-  alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Healthy Host Count"
-  alarm_description = "Not enough healthy hosts (haproxies) behind this ELB"
+resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
+  alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Healthy Hosts: Long Deficiency"
+  alarm_description = "Less than the desired number of healthy hosts behind this ELB for too long"
   namespace = "AWS/ELB"
   dimensions = {
     "LoadBalancerName" = "${var.lb_name}"
@@ -14,9 +14,28 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   comparison_operator = "LessThanThreshold"
   threshold = "${var.server_min_instances}"
   unit = "Count"
+  period = "300"
+  statistic = "Average"
+  evaluation_periods = "3"
+  alarm_actions = ["${var.sns_monitoring_topic_arn}"]
+  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
+}
+
+resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
+  alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Healthy Hosts: Severe Deficiency"
+  alarm_description = "Significantly less than the desired number of healthy hosts behind this ELB"
+  namespace = "AWS/ELB"
+  dimensions = {
+    "LoadBalancerName" = "${var.lb_name}"
+  }
+  metric_name = "HealthyHostCount"
+  comparison_operator = "LessThanThreshold"
+  threshold = "${var.server_min_instances - 1}"
+  unit = "Count"
   period = "60"
   statistic = "Average"
-  evaluation_periods = "2"
+  evaluation_periods = "3"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
   ok_actions = ["${var.sns_monitoring_topic_arn}"]
   insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
