@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "latency" {
   comparison_operator = "GreaterThanThreshold"
   threshold = "5"
   unit = "Seconds"
-  period = "60"
+  period = "300"
   statistic = "Average"
   evaluation_periods = "3"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
