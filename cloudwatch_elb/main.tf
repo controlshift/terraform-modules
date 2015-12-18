@@ -16,7 +16,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
   unit = "Count"
   period = "300"
   statistic = "Average"
-  evaluation_periods = "3"
+  evaluation_periods = "5"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
   ok_actions = ["${var.sns_monitoring_topic_arn}"]
   insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
