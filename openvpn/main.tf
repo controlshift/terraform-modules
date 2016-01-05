@@ -13,7 +13,7 @@ variable "ssl_cert"           { }
 variable "ssl_key"            { }
 variable "key_name"           { }
 variable "private_key"        { }
-variable "ami"                { }
+variable "ami"                { default = "ami-5fe36434" }
 variable "instance_type"      { }
 variable "bastion_host"       { }
 variable "bastion_user"       { }
