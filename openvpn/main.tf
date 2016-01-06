@@ -18,7 +18,6 @@ variable "openvpn_user"       { }
 variable "openvpn_admin_user" { }
 variable "openvpn_admin_pw"   { }
 variable "vpn_cidr"           { }
-variable "sub_domain"         { }
 variable "route_zone_id"      { }
 
 resource "aws_security_group" "openvpn" {
