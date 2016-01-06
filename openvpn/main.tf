@@ -15,8 +15,6 @@ variable "key_name"           { }
 variable "private_key"        { }
 variable "ami"                { default = "ami-5fe36434" }
 variable "instance_type"      { }
-variable "bastion_host"       { }
-variable "bastion_user"       { }
 variable "openvpn_user"       { }
 variable "openvpn_admin_user" { }
 variable "openvpn_admin_pw"   { }
@@ -83,8 +81,6 @@ USERDATA
       user         = "${var.openvpn_user}"
       host         = "${self.private_ip}"
       private_key  = "${var.private_key}"
-      bastion_host = "${var.bastion_host}"
-      bastion_user = "${var.bastion_user}"
     }
 
     inline = [
@@ -102,7 +98,7 @@ USERDATA
 
 resource "aws_route53_record" "openvpn" {
   zone_id = "${var.route_zone_id}"
-  name    = "vpn.${var.sub_domain}"
+  name    = "vpn"
   type    = "A"
   ttl     = "300"
   records = ["${aws_instance.openvpn.public_ip}"]
