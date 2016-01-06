@@ -19,6 +19,7 @@ variable "openvpn_admin_user" { }
 variable "openvpn_admin_pw"   { }
 variable "vpn_cidr"           { }
 variable "route_zone_id"      { }
+variable "app_environment"    { }
 
 resource "aws_security_group" "openvpn" {
   name   = "${var.name}"
@@ -61,10 +62,14 @@ resource "aws_instance" "openvpn" {
   ami           = "${var.ami}"
   instance_type = "${var.instance_type}"
   subnet_id     = "${element(split(",", var.public_subnet_ids), count.index)}"
-
+  associate_public_ip_address = true
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
 
-  tags { Name = "${var.name}" }
+  tags { 
+    Name = "${var.name}" 
+    environment = "${var.app_environment}"
+    kind = "vpn"
+  }
 
   # `admin_user` and `admin_pw` need to be passed in to the appliance through `user_data`, see docs -->
   # https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/
