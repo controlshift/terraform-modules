@@ -11,8 +11,7 @@ variable "vpc_cidr"           { }
 variable "public_subnet_ids"  { }
 variable "ssl_cert"           { }
 variable "ssl_key"            { }
-variable "key_name"           { }
-variable "private_key"        { }
+variable "ssh_username"       { }
 variable "ami"                { default = "ami-5fe36434" }
 variable "instance_type"      { }
 variable "openvpn_user"       { }
@@ -62,7 +61,6 @@ resource "aws_security_group" "openvpn" {
 resource "aws_instance" "openvpn" {
   ami           = "${var.ami}"
   instance_type = "${var.instance_type}"
-  key_name      = "${var.key_name}"
   subnet_id     = "${element(split(",", var.public_subnet_ids), count.index)}"
 
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
@@ -78,9 +76,8 @@ USERDATA
 
   provisioner "remote-exec" {
     connection {
-      user         = "${var.openvpn_user}"
-      host         = "${self.private_ip}"
-      private_key  = "${var.private_key}"
+      user         = "${var.ssh_username}"
+      host         = "${self.public_ip}"
     }
 
     inline = [
