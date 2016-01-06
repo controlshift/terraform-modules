@@ -76,7 +76,7 @@ USERDATA
   provisioner "remote-exec" {
     connection {
       user         = "${var.ssh_username}"
-      host         = "${self.public_ip}"
+      host         = "${aws_instance.openvpn.public_ip}"
     }
 
     inline = [
