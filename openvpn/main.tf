@@ -20,6 +20,8 @@ variable "openvpn_admin_pw"   { }
 variable "vpn_cidr"           { }
 variable "route_zone_id"      { }
 variable "app_environment"    { }
+variable "ssh_cidr_block"     { }
+variable "public_hosted_zone_id" {}
 
 resource "aws_security_group" "openvpn" {
   name   = "${var.name}"
@@ -48,7 +50,7 @@ resource "aws_security_group" "openvpn" {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.ssh_cidr_block}"]
   }
 
   ingress {
@@ -93,6 +95,11 @@ USERDATA
     }
 
     inline = [
+      # sleep for 20 seconds to wait for openvpn startup
+      "sleep 15",
+      "sudo ovpn-init --ec2 --batch --force",
+      # wait for network to come back up
+      "sleep 15",
       # Insert our SSL cert
       "echo '${var.ssl_cert}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.crt > /dev/null",
       "echo '${var.ssl_key}' | sudo tee /usr/local/openvpn_as/etc/web-ssl/server.key > /dev/null",
@@ -103,6 +110,85 @@ USERDATA
       "sudo /usr/local/openvpn_as/scripts/sacli start",
     ]
   }
+  provisioner "local-exec" {
+    command = "ruby provision setup_vpn_dns --environment=${var.app_environment} --aws_vpn_name=${aws_instance.openvpn.public_dns}"
+  }
+}
+
+
+resource "aws_iam_role" "vpn" {
+  name = "vpn-${var.app_environment}"
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_iam_instance_profile" "vpn" {
+  name = "vpn-${var.app_environment}"
+  roles = ["${aws_iam_role.vpn.name}"]
+}
+
+module "iam_describe_ec2" {
+  source = "github.com/controlshift/terraform-modules//iam_policy_describe_ec2"
+  roles = "${aws_iam_role.vpn.name}"
+  env = "${var.app_environment}"
+  app = "vpn"
+}
+
+module "iam_manage_cloudwatch" {
+  source = "github.com/controlshift/terraform-modules//iam_policy_cloudwatch"
+  roles = "${aws_iam_role.vpn.name}"
+  env = "${var.app_environment}"
+  app = "vpn"
+}
+
+resource "aws_iam_policy" "vpn_domain" {
+  name = "vpn-domain-management-${var.app_environment}"
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/${var.route_zone_id}",
+        "arn:aws:route53:::hostedzone/${var.public_hosted_zone_id}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZonesByName"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+POLICY
+}
+
+resource "aws_iam_policy_attachment" "vpn_domains_for_hostnames" {
+  name = "vpn-${var.app_environment}-manage-domains-for-hostnames"
+  roles = ["${aws_iam_role.vpn.name}"]
+  policy_arn = "${aws_iam_policy.vpn_domain.arn}"
 }
 
 resource "aws_route53_record" "openvpn" {
