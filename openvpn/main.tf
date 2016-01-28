@@ -194,7 +194,7 @@ resource "aws_iam_policy_attachment" "vpn_domains_for_hostnames" {
 
 resource "aws_route53_record" "openvpn" {
   zone_id = "${var.route_zone_id}"
-  name    = "vpn.${var.route_zone_name}"
+  name    = "app.${var.route_zone_name}"
   type    = "A"
   ttl     = "300"
   records = ["${aws_instance.openvpn.public_ip}"]
