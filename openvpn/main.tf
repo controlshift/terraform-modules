@@ -19,6 +19,7 @@ variable "openvpn_admin_user" { }
 variable "openvpn_admin_pw"   { }
 variable "vpn_cidr"           { }
 variable "route_zone_id"      { }
+variable "route_zone_name"    { }
 variable "app_environment"    { }
 variable "ssh_cidr_block"     { }
 variable "public_hosted_zone_id" {}
@@ -75,8 +76,8 @@ resource "aws_instance" "openvpn" {
   associate_public_ip_address = true
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
 
-  tags { 
-    Name = "${var.name}" 
+  tags {
+    Name = "${var.name}"
     environment = "${var.app_environment}"
     kind = "vpn"
   }
@@ -193,7 +194,7 @@ resource "aws_iam_policy_attachment" "vpn_domains_for_hostnames" {
 
 resource "aws_route53_record" "openvpn" {
   zone_id = "${var.route_zone_id}"
-  name    = "vpn"
+  name    = "vpn.${var.route_zone_name}"
   type    = "A"
   ttl     = "300"
   records = ["${aws_instance.openvpn.public_ip}"]
