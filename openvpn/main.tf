@@ -81,6 +81,7 @@ resource "aws_instance" "openvpn" {
     Name = "${var.name}"
     environment = "${var.app_environment}"
     kind = "vpn"
+    role = "app"
   }
 
   # `admin_user` and `admin_pw` need to be passed in to the appliance through `user_data`, see docs -->
