@@ -75,6 +75,7 @@ resource "aws_instance" "openvpn" {
   subnet_id     = "${element(split(",", var.public_subnet_ids), count.index)}"
   associate_public_ip_address = true
   vpc_security_group_ids = ["${aws_security_group.openvpn.id}"]
+  iam_instance_profile = "${aws_iam_instance_profile.vpn.name}"
 
   tags {
     Name = "${var.name}"
