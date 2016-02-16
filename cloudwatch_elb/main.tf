@@ -55,8 +55,8 @@ resource "aws_cloudwatch_metric_alarm" "latency" {
   period = "300"
   statistic = "Average"
   evaluation_periods = "3"
-  alarm_actions = ["${var.sns_monitoring_topic_arn}"]
-  ok_actions = ["${var.sns_monitoring_topic_arn}"]
+  alarm_actions = []
+  ok_actions = []
   insufficient_data_actions = []
 }
 
