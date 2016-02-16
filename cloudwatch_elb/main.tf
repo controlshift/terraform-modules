@@ -2,6 +2,7 @@ variable "alarm_name_prefix" {}
 variable "lb_name" {}
 variable "server_min_instances" {}
 variable "sns_monitoring_topic_arn" {}
+variable "low_priority_sns_monitoring_topic_arn" {}
 
 resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
   alarm_name = "${var.alarm_name_prefix}:elb:${var.lb_name} Healthy Hosts: Long Deficiency"
@@ -19,7 +20,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
   evaluation_periods = "5"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
   ok_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = []
 }
 
 resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
@@ -38,7 +39,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   evaluation_periods = "3"
   alarm_actions = ["${var.sns_monitoring_topic_arn}"]
   ok_actions = ["${var.sns_monitoring_topic_arn}"]
-  insufficient_data_actions = ["${var.sns_monitoring_topic_arn}"]
+  insufficient_data_actions = []
 }
 
 resource "aws_cloudwatch_metric_alarm" "latency" {
@@ -55,8 +56,8 @@ resource "aws_cloudwatch_metric_alarm" "latency" {
   period = "300"
   statistic = "Average"
   evaluation_periods = "3"
-  alarm_actions = []
-  ok_actions = []
+  alarm_actions = ["${var.low_priority_sns_monitoring_topic_arn}"]
+  ok_actions = ["${var.low_priority_sns_monitoring_topic_arn}"]
   insufficient_data_actions = []
 }
 
