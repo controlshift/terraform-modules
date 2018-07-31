@@ -13,7 +13,8 @@ resource "aws_iam_policy" "describe_ec2" {
       "Effect": "Allow",
       "Action": [
         "ec2:Describe*",
-        "autoscaling:DescribeAutoScalingInstances"
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:DescribeAutoScalingGroups"
       ],
       "Resource": [
         "*"
