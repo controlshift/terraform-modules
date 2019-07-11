@@ -21,9 +21,7 @@ variable "ssl_key" {}
 
 variable "ssh_username" {}
 
-variable "ami" {
-  default = "ami-5fe36434"
-}
+variable "ami" {}
 
 variable "instance_type" {}
 
