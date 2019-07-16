@@ -1,6 +1,8 @@
 # role names as string separated by ','
 variable "roles" {}
+
 variable "env" {}
+
 variable "app" {}
 
 resource "aws_iam_policy" "manage_cloudwatch" {
@@ -25,10 +27,11 @@ resource "aws_iam_policy" "manage_cloudwatch" {
     ]
 }
 POLICY
+
 }
 
 resource "aws_iam_policy_attachment" "manage_cloudwatch" {
   name = "${var.app}-${var.env}-manage-cloudwatch"
-  roles = ["${split(",", var.roles)}"]
-  policy_arn = "${aws_iam_policy.manage_cloudwatch.arn}"
+  roles = split(",", var.roles)
+  policy_arn = aws_iam_policy.manage_cloudwatch.arn
 }
