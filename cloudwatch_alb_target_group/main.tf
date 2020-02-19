@@ -12,7 +12,9 @@ variable "sns_monitoring_topic_arn" {}
 
 variable "low_priority_sns_monitoring_topic_arn" {}
 
-variable "treat_missing_data" {}
+variable "treat_missing_data" {
+  default = "missing"
+}
 
 resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
   alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Healthy Hosts: Long Deficiency"
