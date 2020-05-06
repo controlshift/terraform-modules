@@ -42,42 +42,52 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
 
 resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Healthy Hosts: Severe Deficiency"
-  alarm_description = "Significantly less than the desired number of healthy ${var.targets_name} hosts behind the ALB"
-  namespace = "AWS/ApplicationELB"
-  dimensions = {
-    "LoadBalancer" = var.alb_dimension_id
-    "TargetGroup" = var.target_group_dimension_id
-  }
-  metric_name = "HealthyHostCount"
+  alarm_description = "Significantly less than the desired proportion of healthy ${var.targets_name} hosts behind the ALB"
   comparison_operator = "LessThanThreshold"
-  threshold = var.server_min_healthy_hosts
-  unit = "Count"
-  period = "60"
-  statistic = "Average"
+  threshold = ".75"
   evaluation_periods = "3"
   alarm_actions = [var.sns_monitoring_topic_arn]
   ok_actions = [var.sns_monitoring_topic_arn]
   insufficient_data_actions = []
-}
 
-resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts_too_high" {
-  alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Unhealthy Hosts: Too many"
-  alarm_description = "More than the desired number of unhealthy ${var.targets_name} hosts behind the ALB"
-  namespace = "AWS/ApplicationELB"
-  dimensions = {
-    "LoadBalancer" = var.alb_dimension_id
-    "TargetGroup" = var.target_group_dimension_id
+  metric_query {
+    id          = "p1"
+    expression  = "h1 / (h1 + h2)"
+    label       = "HealthyHostProportion"
+    return_data = "true"
   }
-  metric_name = "UnHealthyHostCount"
-  comparison_operator = "GreaterThanThreshold"
-  threshold = var.server_max_unhealthy_hosts
-  unit = "Count"
-  period = "60"
-  statistic = "Average"
-  evaluation_periods = "3"
-  alarm_actions = [var.sns_monitoring_topic_arn]
-  ok_actions = [var.sns_monitoring_topic_arn]
-  insufficient_data_actions = []
+
+  metric_query {
+    id          = "h1"
+    metric {
+      metric_name = "HealthyHostCount"
+      namespace   = "AWS/ApplicationELB"
+      period      = "60"
+      stat        = "Average"
+      unit        = "Count"
+
+      dimensions = {
+        "LoadBalancer" = var.alb_dimension_id
+        "TargetGroup" = var.target_group_dimension_id
+      }
+    }
+  }
+
+  metric_query {
+    id          = "h2"
+    metric {
+      metric_name = "UnHealthyHostCount"
+      namespace   = "AWS/ApplicationELB"
+      period      = "60"
+      stat        = "Average"
+      unit        = "Count"
+
+      dimensions = {
+        "LoadBalancer" = var.alb_dimension_id
+        "TargetGroup" = var.target_group_dimension_id
+      }
+    }
+  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "target_response_time" {
