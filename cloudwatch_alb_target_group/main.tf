@@ -46,7 +46,27 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   }
   metric_name = "HealthyHostCount"
   comparison_operator = "LessThanThreshold"
-  threshold = var.server_min_instances - 1
+  threshold = var.server_min_instances < 8 ? var.server_min_instances - 1 : ceil(var.server_min_instances * 3 / 4)
+  unit = "Count"
+  period = "60"
+  statistic = "Average"
+  evaluation_periods = "3"
+  alarm_actions = [var.sns_monitoring_topic_arn]
+  ok_actions = [var.sns_monitoring_topic_arn]
+  insufficient_data_actions = []
+}
+
+resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts_too_high" {
+  alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Unhealthy Hosts: Too many"
+  alarm_description = "More than the desired number of unhealthy ${var.targets_name} hosts behind the ALB"
+  namespace = "AWS/ApplicationELB"
+  dimensions = {
+    "LoadBalancer" = var.alb_dimension_id
+    "TargetGroup" = var.target_group_dimension_id
+  }
+  metric_name = "UnHealthyHostCount"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold = var.server_min_instances < 8 ? 1 : floor(var.server_min_instances * 1 / 4)
   unit = "Count"
   period = "60"
   statistic = "Average"
