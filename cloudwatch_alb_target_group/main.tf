@@ -8,6 +8,8 @@ variable "targets_name" {}
 
 variable "server_min_instances" {}
 
+variable "server_min_healthy_hosts" {}
+
 variable "sns_monitoring_topic_arn" {}
 
 variable "low_priority_sns_monitoring_topic_arn" {}
@@ -46,7 +48,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   }
   metric_name = "HealthyHostCount"
   comparison_operator = "LessThanThreshold"
-  threshold = var.server_min_instances < 8 ? var.server_min_instances - 1 : ceil(var.server_min_instances * 3 / 4)
+  threshold = var.server_min_healthy_hosts
   unit = "Count"
   period = "60"
   statistic = "Average"
@@ -65,8 +67,8 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts_too_high" {
     "TargetGroup" = var.target_group_dimension_id
   }
   metric_name = "UnHealthyHostCount"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold = var.server_min_instances < 8 ? 1 : floor(var.server_min_instances * 1 / 4)
+  comparison_operator = "GreaterThanThreshold"
+  threshold = var.server_min_instances - var.server_min_healthy_hosts
   unit = "Count"
   period = "60"
   statistic = "Average"
