@@ -8,9 +8,7 @@ variable "targets_name" {}
 
 variable "server_min_instances" {}
 
-variable "server_min_healthy_hosts" {}
-
-variable "server_max_unhealthy_hosts" {}
+variable "server_min_healthy_proportion" {}
 
 variable "sns_monitoring_topic_arn" {}
 
@@ -44,7 +42,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Healthy Hosts: Severe Deficiency"
   alarm_description = "Significantly less than the desired proportion of healthy ${var.targets_name} hosts behind the ALB"
   comparison_operator = "LessThanThreshold"
-  threshold = ".75"
+  threshold = var.server_min_healthy_proportion
   evaluation_periods = "3"
   alarm_actions = [var.sns_monitoring_topic_arn]
   ok_actions = [var.sns_monitoring_topic_arn]
