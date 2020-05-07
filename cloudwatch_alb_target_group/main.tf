@@ -49,14 +49,14 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   insufficient_data_actions = []
 
   metric_query {
-    id          = "p1"
-    expression  = "h1 / (h1 + h2)"
+    id          = "healthy_proportion"
+    expression  = "healthy_count / (healthy_count + unhealthy_count)"
     label       = "HealthyHostProportion"
     return_data = "true"
   }
 
   metric_query {
-    id          = "h1"
+    id          = "healthy_count"
     metric {
       metric_name = "HealthyHostCount"
       namespace   = "AWS/ApplicationELB"
@@ -72,7 +72,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   }
 
   metric_query {
-    id          = "h2"
+    id          = "unhealthy_count"
     metric {
       metric_name = "UnHealthyHostCount"
       namespace   = "AWS/ApplicationELB"
