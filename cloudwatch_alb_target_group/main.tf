@@ -8,8 +8,6 @@ variable "targets_name" {}
 
 variable "server_min_instances" {}
 
-variable "server_min_healthy_proportion" {}
-
 variable "sns_monitoring_topic_arn" {}
 
 variable "low_priority_sns_monitoring_topic_arn" {}
@@ -39,52 +37,21 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
-  alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Healthy Hosts: Severe Deficiency"
-  alarm_description = "Significantly less than the desired proportion of healthy ${var.targets_name} hosts behind the ALB"
-  comparison_operator = "LessThanThreshold"
-  threshold = var.server_min_healthy_proportion
+  alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Unhealthy Hosts: At least one"
+  alarm_description = "At least one unhealthy host in ${var.targets_name} behind the ALB. This should not be triggered by normal autoscaling and deployment"
+
+  metric_name = "UnHealthyHostCount"
+  comparison_operator = "GreaterThanThreshold"
+  threshold = "0"
+
   evaluation_periods = "3"
   alarm_actions = [var.sns_monitoring_topic_arn]
   ok_actions = [var.sns_monitoring_topic_arn]
   insufficient_data_actions = []
 
-  metric_query {
-    id          = "healthy_proportion"
-    expression  = "healthy_count / (healthy_count + unhealthy_count)"
-    label       = "HealthyHostProportion"
-    return_data = "true"
-  }
-
-  metric_query {
-    id          = "healthy_count"
-    metric {
-      metric_name = "HealthyHostCount"
-      namespace   = "AWS/ApplicationELB"
-      period      = "60"
-      stat        = "Average"
-      unit        = "Count"
-
-      dimensions = {
-        "LoadBalancer" = var.alb_dimension_id
-        "TargetGroup" = var.target_group_dimension_id
-      }
-    }
-  }
-
-  metric_query {
-    id          = "unhealthy_count"
-    metric {
-      metric_name = "UnHealthyHostCount"
-      namespace   = "AWS/ApplicationELB"
-      period      = "60"
-      stat        = "Average"
-      unit        = "Count"
-
-      dimensions = {
-        "LoadBalancer" = var.alb_dimension_id
-        "TargetGroup" = var.target_group_dimension_id
-      }
-    }
+  dimensions = {
+    "LoadBalancer" = var.alb_dimension_id
+    "TargetGroup" = var.target_group_dimension_id
   }
 }
 
