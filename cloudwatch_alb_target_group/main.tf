@@ -61,23 +61,23 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
 resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts_too_many_too_long" {
   alarm_name = "${var.app_environment}:alb:public:${var.targets_name} Unhealthy Hosts: Too many"
   alarm_description = "Too many unhealthy hosts in ${var.targets_name} behind the ALB. This should not be triggered by normal autoscaling and deployment"
+  namespace = "AWS/ApplicationELB"
+  dimensions = {
+    "LoadBalancer" = var.alb_dimension_id
+    "TargetGroup" = var.target_group_dimension_id
+  }
 
   metric_name = "UnHealthyHostCount"
-  statistic = "Average"
-  unit = "Count"
   comparison_operator = "GreaterThanThreshold"
   threshold = "1"
+  unit = "Count"
   period = "60"
+  statistic = "Average"
   evaluation_periods = "3"
 
   alarm_actions = [var.sns_monitoring_topic_arn]
   ok_actions = [var.sns_monitoring_topic_arn]
   insufficient_data_actions = []
-
-  dimensions = {
-    "LoadBalancer" = var.alb_dimension_id
-    "TargetGroup" = var.target_group_dimension_id
-  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "target_response_time" {
