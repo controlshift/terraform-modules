@@ -8,7 +8,7 @@ variable "targets_name" {}
 
 variable "server_min_instances" {}
 
-variable "server_min_healthy" {}
+variable "server_min_healthy_instances" {}
 
 variable "sns_monitoring_topic_arn" {}
 
@@ -48,7 +48,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   }
   metric_name = "HealthyHostCount"
   comparison_operator = "LessThanThreshold"
-  threshold = var.server_min_healthy
+  threshold = var.server_min_healthy_instances
   unit = "Count"
   period = "60"
   statistic = "Average"
