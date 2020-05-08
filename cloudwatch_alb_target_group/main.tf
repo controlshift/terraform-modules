@@ -43,8 +43,8 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   metric_name = "UnHealthyHostCount"
   statistic = "Average"
   unit = "Count"
-  comparison_operator = "GreaterThanThreshold"
-  threshold = "0"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold = "1"
   period = "60"
   evaluation_periods = "3"
 
