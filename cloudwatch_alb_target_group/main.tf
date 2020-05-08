@@ -41,10 +41,13 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   alarm_description = "At least one unhealthy host in ${var.targets_name} behind the ALB. This should not be triggered by normal autoscaling and deployment"
 
   metric_name = "UnHealthyHostCount"
+  statistic = "Average"
+  unit = "Count"
   comparison_operator = "GreaterThanThreshold"
   threshold = "0"
-
+  period = "60"
   evaluation_periods = "3"
+
   alarm_actions = [var.sns_monitoring_topic_arn]
   ok_actions = [var.sns_monitoring_topic_arn]
   insufficient_data_actions = []
