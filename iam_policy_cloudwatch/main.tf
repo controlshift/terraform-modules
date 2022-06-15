@@ -13,6 +13,8 @@ locals {
 
 resource "aws_iam_policy" "manage_cloudwatch" {
   name = "${var.app}${local.region_prefix}-${var.env}-manage-cloudwatch"
+  # Currently CloudWatch API doesn't support resource-level permissions (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/permissions-reference-cw.html)
+  #tfsec:ignore:aws-iam-no-policy-wildcards
   policy = <<POLICY
 {
     "Version": "2012-10-17",

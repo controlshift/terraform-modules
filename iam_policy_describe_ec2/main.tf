@@ -13,6 +13,10 @@ locals {
 
 resource "aws_iam_policy" "describe_ec2" {
   name = "${var.app}${local.region_prefix}-${var.env}-describe-ec2"
+  # Currently EC2 Describe* and Autoscaling DescribeAutoScaling* APIs don't support resource-level permissions
+  # (see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policy-structure.html#UsingWithEC2_Actions and
+  # https://docs.aws.amazon.com/autoscaling/ec2/userguide/control-access-using-iam.html#policy-auto-scaling-resources)
+  #tfsec:ignore:aws-iam-no-policy-wildcards
   policy = <<POLICY
 {
   "Version": "2012-10-17",
