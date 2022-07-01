@@ -33,8 +33,8 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_low_too_long" {
   period = "300"
   statistic = "Average"
   evaluation_periods = "12"
-  alarm_actions = [var.low_priority_sns_monitoring_topic_arn]
-  ok_actions = [var.low_priority_sns_monitoring_topic_arn]
+  alarm_actions = compact([var.low_priority_sns_monitoring_topic_arn])
+  ok_actions = compact([var.low_priority_sns_monitoring_topic_arn])
   insufficient_data_actions = []
 }
 
@@ -53,8 +53,8 @@ resource "aws_cloudwatch_metric_alarm" "healthy_hosts_seriously_low" {
   period = "60"
   statistic = "Average"
   evaluation_periods = "3"
-  alarm_actions = [var.sns_monitoring_topic_arn]
-  ok_actions = [var.sns_monitoring_topic_arn]
+  alarm_actions = compact([var.sns_monitoring_topic_arn])
+  ok_actions = compact([var.sns_monitoring_topic_arn])
   insufficient_data_actions = []
 }
 
@@ -75,8 +75,8 @@ resource "aws_cloudwatch_metric_alarm" "unhealthy_hosts_too_many_too_long" {
   statistic = "Average"
   evaluation_periods = "3"
 
-  alarm_actions = [var.sns_monitoring_topic_arn]
-  ok_actions = [var.sns_monitoring_topic_arn]
+  alarm_actions = compact([var.sns_monitoring_topic_arn])
+  ok_actions = compact([var.sns_monitoring_topic_arn])
   insufficient_data_actions = []
 }
 
@@ -95,8 +95,8 @@ resource "aws_cloudwatch_metric_alarm" "target_response_time" {
   period = "300"
   statistic = "Average"
   evaluation_periods = "3"
-  alarm_actions = [var.low_priority_sns_monitoring_topic_arn]
-  ok_actions = [var.low_priority_sns_monitoring_topic_arn]
+  alarm_actions = compact([var.low_priority_sns_monitoring_topic_arn])
+  ok_actions = compact([var.low_priority_sns_monitoring_topic_arn])
   insufficient_data_actions = []
   treat_missing_data = var.treat_missing_data
 }
@@ -116,8 +116,8 @@ resource "aws_cloudwatch_metric_alarm" "rejected_connection_count" {
   period = "60"
   statistic = "Sum"
   evaluation_periods = "1"
-  alarm_actions = [var.sns_monitoring_topic_arn]
-  ok_actions = [var.sns_monitoring_topic_arn]
+  alarm_actions = compact([var.sns_monitoring_topic_arn])
+  ok_actions = compact([var.sns_monitoring_topic_arn])
   insufficient_data_actions = []
   treat_missing_data = "notBreaching"
 }
