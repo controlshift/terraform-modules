@@ -30,7 +30,7 @@ def handler(event:, context:)
     message = ":warning: ECR scan found vulnerabilities in #{image_description}"
 
     scan_results_url = "https://#{region}.console.aws.amazon.com/ecr/repositories/private/#{account_id}/"\
-                       "#{ecr_repo_name}/_/image/#{image_digest}/scan-results?region=#{region}"
+                       "#{ecr_repo_name}/_/image/#{image_digest}/details?region=#{region}"
 
     attachment = {
       fallback: message,
