@@ -51,7 +51,7 @@ resource "aws_lambda_function" "ecr_scan_result_to_slack" {
   filename = data.archive_file.ecr_scan_result_lambda_zip.output_path
   function_name = "ecrScanResultsToSlack"
   role = aws_iam_role.ecr_scan_result_lambda_role.arn
-  runtime = "ruby3.2"
+  runtime = "ruby3.4"
   timeout = 60
 
   source_code_hash = data.archive_file.ecr_scan_result_lambda_zip.output_base64sha256
@@ -223,7 +223,7 @@ resource "aws_lambda_function" "start_ecr_scans" {
   filename = data.archive_file.start_ecr_scans_lambda_zip.output_path
   function_name = "startEcrScans"
   role = aws_iam_role.start_ecr_scans_lambda_role.arn
-  runtime = "ruby3.2"
+  runtime = "ruby3.4"
   timeout = 60
 
   source_code_hash = data.archive_file.start_ecr_scans_lambda_zip.output_base64sha256
